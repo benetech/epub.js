@@ -27,6 +27,11 @@ module.exports = {
 	devtool: MINIMIZE ? false : 'source-map',
 	output: {
 		path: path.resolve("./dist"),
+		// Use webpack 5's built-in WASM xxhash64 for all internal hashing. The old
+		// default (MD4) is sourced from OpenSSL, which dropped MD4 in OpenSSL 3
+		// (Node 17+), breaking the build with ERR_OSSL_EVP_UNSUPPORTED. xxhash64
+		// bypasses OpenSSL entirely, so the build runs on any modern Node. READ-548.
+		hashFunction: "xxhash64",
 		filename: filename,
 		sourceMapFilename: sourceMapFilename,
 		library: "ePub",
@@ -50,7 +55,6 @@ module.exports = {
 	devServer: {
 		host: hostname,
 		port: port,
-		inline: true,
 		headers: {
 			"Access-Control-Allow-Origin": "*",
 			"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE",
